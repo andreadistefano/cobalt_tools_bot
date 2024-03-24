@@ -3,6 +3,7 @@ from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHan
 from dotenv import load_dotenv
 import requests
 import os
+import systemd
 
 # Telegram Bot Token
 load_dotenv()
@@ -38,7 +39,10 @@ def send_to_api(message):
         return None
 
 if __name__ == '__main__':
+    print('Bot starting up...')
     application = ApplicationBuilder().token(TOKEN).build()
     echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND) & (filters.User(USER_ID_1) | filters.User(USER_ID_2)), echo)
     application.add_handler(echo_handler)
+    print('Bot startup complete.')
+    systemd.daemon.notify('READY=1')
     application.run_polling()
