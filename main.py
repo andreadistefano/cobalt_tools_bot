@@ -36,6 +36,15 @@ def send_to_api(message):
         return None
 
 if __name__ == '__main__':
+    # for render
+    import socket
+
+    HOST = '0.0.0.0'
+    PORT = 5001
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+
     application = ApplicationBuilder().token(TOKEN).build()
     echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND) & (filters.User(USER_ID_1) | filters.User(USER_ID_2)), echo)
     application.add_handler(echo_handler)
