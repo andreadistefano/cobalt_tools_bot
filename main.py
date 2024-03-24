@@ -4,18 +4,18 @@ from dotenv import load_dotenv
 import requests
 import os
 from systemd import daemon
+from UsersFilter import UsersFilter
 
 # Telegram Bot Token
 load_dotenv()
 TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
-USER_ID_1 = int(os.environ['USER_ID_1'])
-USER_ID_2 = int(os.environ['USER_ID_2'])
+USER_IDS = [int(user_id) for user_id in os.environ['USER_IDS'].split(';')]
 
 # API Endpoint to send POST requests
 API_ENDPOINT = 'https://co.wuk.sh/api/json'
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(f"Received message: {update.message.text}")
+    print(f"Received message from {update.message.from_user.id} with text {update.message.text}")
     message = update.message.text
     api_response = send_to_api(message)
     print(f"API response: {api_response}")
@@ -41,7 +41,9 @@ def send_to_api(message):
 if __name__ == '__main__':
     print('Bot starting up...')
     application = ApplicationBuilder().token(TOKEN).build()
-    echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND) & (filters.User(USER_ID_1) | filters.User(USER_ID_2)), echo)
+    users_filter = UsersFilter(USER_IDS)
+
+    echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND) & users_filter, echo)
     application.add_handler(echo_handler)
     print('Bot startup complete.')
     daemon.notify('READY=1')
