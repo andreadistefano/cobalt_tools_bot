@@ -24,8 +24,10 @@ USER_ID_2 = int(os.environ['USER_ID_2'])
 API_ENDPOINT = 'https://co.wuk.sh/api/json'
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(f"Received message: {update.message.text}")
     message = update.message.text
     api_response = send_to_api(message)
+    print(f"API response: {api_response}")
     await context.bot.send_message(chat_id=update.effective_chat.id, text=api_response)
 
 # Function to send message contents to API using POST request
@@ -46,6 +48,8 @@ def send_to_api(message):
         return None
 
 if __name__ == '__main__':
+    print("Starting Flask app")
+    app.run(host="0.0.0.0", port=5000)
     application = ApplicationBuilder().token(TOKEN).build()
     echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND) & (filters.User(USER_ID_1) | filters.User(USER_ID_2)), echo)
     application.add_handler(echo_handler)
