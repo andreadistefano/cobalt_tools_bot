@@ -3,16 +3,6 @@ from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHan
 from dotenv import load_dotenv
 import requests
 import os
-from flask import Flask, make_response
-
-# Flask app
-app = Flask(__name__)
-
-@app.route('/')
-def index():
-    response = make_response("Nothing to see here", 200)
-    response.mimetype = "text/plain"
-    return response
 
 # Telegram Bot Token
 load_dotenv()
@@ -48,8 +38,6 @@ def send_to_api(message):
         return None
 
 if __name__ == '__main__':
-    print("Starting Flask app")
-    app.run(host="0.0.0.0", port=5000)
     application = ApplicationBuilder().token(TOKEN).build()
     echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND) & (filters.User(USER_ID_1) | filters.User(USER_ID_2)), echo)
     application.add_handler(echo_handler)
